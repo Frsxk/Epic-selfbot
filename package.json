@@ -1,0 +1,18 @@
+{
+  "name": "epic-selfbot",
+  "version": "1.0.0",
+  "description": "selfbotting for epic rpg discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "discord.js": "^13.17.1",
+    "discord.js-selfbot-v13": "^3.1.4",
+    "dotenv": "^16.4.1",
+    "node-cron": "^3.0.3"
+  }
+}
