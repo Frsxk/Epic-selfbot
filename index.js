@@ -1,112 +1,120 @@
 const { Client } = require('discord.js-selfbot-v13');
-const Discord = require('discord.js');
 const client = new Client();
 const config = require('./config');
 const cron = require('node-cron');
 require('dotenv').config();
 const chalk = require('chalk');
 
-client.on('ready', async () => {
+const stats = {
+    hunt: 0,
+    work: 0,
+    farm: 0,
+    training: 0,
+    adventure: 0,
+  
+    increaseStats(stat) {
+      this[stat]++; 
+    }
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+} 
+const newMsg = `**EPIC RPG STATS TRACKER**\nHunt: ${stats.hunt}\nWork: ${stats.work}\nFarm: ${stats.farm}\nTraining: ${stats.training}\nAdventure: ${stats.adventure}`;
+
+client.on('messageCreate', async message => {
+    const chnl = await client.channels.cache.find(ch => ch.id === config.channel);
+    if (message.author.id !== config.bot) return;
+    if (message.channel.id !== config.channel) return;
+
+    if (message.content.includes(`<@${client.user.id}>`)) {
+        console.log(`please solve captcha and run again`);
+        return process.exit()
+    }
+})
+
+client.on('ready', async (message) => {
     console.log(chalk.bgBlueBright.black(` ✔️ => Successfully logged in to ${client.user.username}! `));
     const chnl = await client.channels.cache.find(ch => ch.id === config.channel);
 
-    function randomInterval(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }; 
-    function scheduleTask(task, interval) {
-        return cron.schedule(`*/${interval} * * * *`, task);
-    }
-
     // Send stats and track
-    const stats = {
-        hunt: 0,
-        work: 0,
-        farm: 0,
-        training: 0,
-        adventure: 0,
-      
-        increaseStats(stat) {
-          this[stat]++; 
-        }
-    }
-    const msg = `**EPIC RPG STATS TRACKER**\nHunt: ${stats.hunt}\nWork: ${stats.work}\nFarm: ${stats.farm}\nTraining: ${stats.training}\nAdventure: ${stats.adventure}\n\nI am solemnly up to no good.`;
-    chnl.send(msg);
+    const msg = `**EPIC RPG STATS TRACKER**\nHunt: 0\nWork: 0\nFarm: 0\nTraining: 0\nAdventure: 0`;
+    const statMsg = await chnl.send(msg);
 
-    // autohunt
+    let previousNumber;
+    const minute = 60000;
+    function randomInterval(min, max) {
+        let random;
+        do {
+            random = Math.floor(Math.random() * (max - min + 1)).toFixed(3) + min;
+        } while(random === previousNumber);
+        previousNumber = random;
+        return random;
+    }
+    function scheduleTask(task, interval) {
+        task();
+        setInterval(function() {
+            task();
+        }, interval)
+    }
+
+    // auto hunt
     async function doHunt() {
-        chnl.send('rpg hunt hardmode together');
+        chnl.send(config.huntCmd);
         stats.increaseStats('hunt');
         await sleep(1000);
-        msg.edit(msg);
+        // statMsg.edit(newMsg);
         console.log('hunt done');
     }
-    const minHunt = 1.1; 
-    const maxHunt = 1.5;
-    const randomHunts = randomInterval(minHunt, maxHunt);
-    cron.schedule(`*/${randomHunts} * * * *`, doHunt);
+    scheduleTask(doHunt, minute * 1.05);
+    await sleep(1000);
 
-
-    // autowork
+    // auto work
     async function doWork() {
-        chnl.send('rpg chainsaw');
+        chnl.send(config.workCmd);
         stats.increaseStats('work');
         await sleep(1000);
-        msg.edit(msg);
+        // statMsg.edit(newMsg);
         console.log('work done');
     }
-    const minWork = 3.5;
-    const maxWork = 4;
-    const randomWork = randomInterval(minWork, maxWork);
-    cron.schedule(`*/${randomWork} * * * *`, doWork);
+    scheduleTask(doWork, minute * 5.04);
+    await sleep(1000);
 
-
-    // autofarm
+    // auto farm
     async function doFarm() {
-        chnl.send('rpg farm carrot');
+        chnl.send(config.farmCmd);
         stats.increaseStats('farm');
         await sleep(1000);
-        msg.edit(msg);
+        // statMsg.edit(newMsg);
         console.log('farm done');
     }
-    const minFarm = 6.5;
-    const maxFarm = 7;
-    const randomFarm = randomInterval(minFarm, maxFarm);
-    cron.schedule(`*/${randomFarm} * * * *`, doFarm);
+    scheduleTask(doFarm, minute * 10.03);
+    await sleep(1000);
 
-
-    // autotraining
+    // auto training
     async function doTraining() {
-        chnl.send('rpg ultraining');
+        chnl.send(config.trainingCmd);
         await sleep(1000);
         chnl.send('double');
         await sleep(1000);
         chnl.send('attlock');
         stats.increaseStats('training');
         await sleep(1000);
-        msg.edit(msg);
+        // statMsg.edit(newMsg);
         console.log('training done');
     }
-    const minTraining = 10;
-    const maxTraining = 10.5;
-    const randomTraining = randomInterval(minTraining, maxTraining);
-    cron.schedule(`*/${randomTraining} * * * *`, doTraining);
+    scheduleTask(doTraining, minute * 15.02)
+    await sleep(1000);
 
-
-    // autoadventure
+    // auto adventure
     async function doAdventure() {
-        chnl.send('rpg adventure hardmode');
+        chnl.send('rpg adv h');
         stats.increaseStats('adventure');
         await sleep(1000);
-        msg.edit(msg);
+        // statMsg.edit(newMsg);
         console.log('adventure done');
     }
-    const minAdventure = 39;
-    const maxAdventure = 40;
-    const randomAdventure = randomInterval(minAdventure, maxAdventure);
-    cron.schedule(`*/${randomAdventure} * * * *`, doAdventure);
+    await sleep(1000);
+    scheduleTask(doAdventure, minute * 60.01)
 })
 
 client.login(process.env.TOKEN);
