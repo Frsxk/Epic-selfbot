@@ -1,4 +1,4 @@
-require('dotenv').config;
+require('dotenv').config();
 
 module.exports = {
     user: '6823456789043125',
@@ -7,7 +7,7 @@ module.exports = {
     token: `${process.env.TOKEN}`,
     huntCmd: 'rpg hunt hardmode together',
     workCmd: 'rpg chainsaw',
-    farmCmd: 'rpg farm carrot',
+    farmCmd: 'rpg farm bread',
     trainingCmd: 'rpg ultraining',
     adventureCmd: 'rpg adventure hardmode'
 }

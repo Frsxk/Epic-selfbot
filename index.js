@@ -1,8 +1,7 @@
+
 const { Client } = require('discord.js-selfbot-v13');
 const client = new Client();
 const config = require('./config');
-const cron = require('node-cron');
-require('dotenv').config();
 const chalk = require('chalk');
 
 const stats = {
@@ -22,23 +21,28 @@ function sleep(ms) {
 const newMsg = `**EPIC RPG STATS TRACKER**\nHunt: ${stats.hunt}\nWork: ${stats.work}\nFarm: ${stats.farm}\nTraining: ${stats.training}\nAdventure: ${stats.adventure}`;
 
 client.on('messageCreate', async message => {
-    const chnl = await client.channels.cache.find(ch => ch.id === config.channel);
-    if (message.author.id !== config.bot) return;
     if (message.channel.id !== config.channel) return;
 
-    if (message.content.includes(`<@${client.user.id}>`)) {
-        console.log(`please solve captcha and run again`);
-        return process.exit()
+    if (message.content.includes(`:police_car:`) || message.content.includes(`🚓`)) {
+        console.log(`please solve captcha and type start`);
+        return process.exit();
     }
+    // if (message.content === 'start') {
+    //     console.log('bot started');
+    //     return child.resume(child.sProc);
+    // } 
+    // if (message.content === 'pause') {
+    //     console.log('bot paused');
+    //     return child.pause(child.sProc);
+    // }
 })
-
 client.on('ready', async (message) => {
     console.log(chalk.bgBlueBright.black(` ✔️ => Successfully logged in to ${client.user.username}! `));
     const chnl = await client.channels.cache.find(ch => ch.id === config.channel);
 
     // Send stats and track
     const msg = `**EPIC RPG STATS TRACKER**\nHunt: 0\nWork: 0\nFarm: 0\nTraining: 0\nAdventure: 0`;
-    const statMsg = await chnl.send(msg);
+    // const statMsg = await chnl.send(msg);
 
     let previousNumber;
     const minute = 60000;
@@ -61,61 +65,55 @@ client.on('ready', async (message) => {
     async function doHunt() {
         chnl.send(config.huntCmd);
         stats.increaseStats('hunt');
-        await sleep(1000);
-        // statMsg.edit(newMsg);
-        console.log('hunt done');
+        console.log(`hunt done: ${stats.hunt}`);
     }
-    scheduleTask(doHunt, minute * 1.05);
-    await sleep(1000);
+    scheduleTask(doHunt, minute * 0.78);
+    await sleep(2000);
 
     // auto work
     async function doWork() {
         chnl.send(config.workCmd);
         stats.increaseStats('work');
-        await sleep(1000);
-        // statMsg.edit(newMsg);
-        console.log('work done');
+        console.log(`work done: ${stats.work}`);
     }
     scheduleTask(doWork, minute * 5.04);
-    await sleep(1000);
+    await sleep(2000);
 
     // auto farm
     async function doFarm() {
         chnl.send(config.farmCmd);
         stats.increaseStats('farm');
-        await sleep(1000);
-        // statMsg.edit(newMsg);
-        console.log('farm done');
+        console.log(`farm done: ${stats.work}`);
     }
     scheduleTask(doFarm, minute * 10.03);
-    await sleep(1000);
+    await sleep(2000);
 
     // auto training
     async function doTraining() {
         chnl.send(config.trainingCmd);
         await sleep(1000);
         chnl.send('double');
-        await sleep(1000);
         chnl.send('attlock');
         stats.increaseStats('training');
-        await sleep(1000);
-        // statMsg.edit(newMsg);
-        console.log('training done');
+        console.log(`training done: ${stats.training}`);
     }
-    scheduleTask(doTraining, minute * 15.02)
-    await sleep(1000);
+    scheduleTask(doTraining, minute * 15.1);
+    await sleep(2000);
 
     // auto adventure
     async function doAdventure() {
-        chnl.send('rpg adv h');
+        chnl.send(config.adventureCmd);
         stats.increaseStats('adventure');
-        await sleep(1000);
-        // statMsg.edit(newMsg);
-        console.log('adventure done');
+        console.log(`adventure done: ${stats.adventure}`);
     }
-    await sleep(1000);
-    scheduleTask(doAdventure, minute * 60.01)
+    scheduleTask(doAdventure, minute * 54.01);
+    await sleep(2000);
+
+    async function buyBoost() {
+        chnl.send('rpg love buy valentine boost');
+        console.log('boost bought');
+    }
+    scheduleTask(buyBoost, minute * 60);
 })
 
-client.login(process.env.TOKEN);
-
+client.login(config.token);
