@@ -67,7 +67,7 @@ client.on('ready', async (message) => {
         stats.increaseStats('hunt');
         console.log(`hunt done: ${stats.hunt}`);
     }
-    scheduleTask(doHunt, minute * 0.78);
+    scheduleTask(doHunt, minute * config.huntCd * config.cdReduction);
     await sleep(2000);
 
     // auto work
@@ -76,7 +76,7 @@ client.on('ready', async (message) => {
         stats.increaseStats('work');
         console.log(`work done: ${stats.work}`);
     }
-    scheduleTask(doWork, minute * 5.04);
+    scheduleTask(doWork, minute * config.workCd * config.cdReduction);
     await sleep(2000);
 
     // auto farm
@@ -85,7 +85,7 @@ client.on('ready', async (message) => {
         stats.increaseStats('farm');
         console.log(`farm done: ${stats.work}`);
     }
-    scheduleTask(doFarm, minute * 10.03);
+    scheduleTask(doFarm, minute * config.farmCd * config.cdReduction);
     await sleep(2000);
 
     // auto training
@@ -97,7 +97,7 @@ client.on('ready', async (message) => {
         stats.increaseStats('training');
         console.log(`training done: ${stats.training}`);
     }
-    scheduleTask(doTraining, minute * 15.1);
+    scheduleTask(doTraining, minute * config.trainingCd * config.cdReduction);
     await sleep(2000);
 
     // auto adventure
@@ -106,14 +106,8 @@ client.on('ready', async (message) => {
         stats.increaseStats('adventure');
         console.log(`adventure done: ${stats.adventure}`);
     }
-    scheduleTask(doAdventure, minute * 54.01);
+    scheduleTask(doAdventure, minute * config.adventureCd * config.cdReduction);
     await sleep(2000);
-
-    async function buyBoost() {
-        chnl.send('rpg love buy valentine boost');
-        console.log('boost bought');
-    }
-    scheduleTask(buyBoost, minute * 60);
 })
 
 client.login(config.token);
