@@ -54,7 +54,7 @@ client.on('messageCreate', async message => {
         if (p2.includes(`:`)) {
             p3 = p2.split(':')[1].trim();
         } else if (p2.includes(`💎`)) {
-            p3 = `gem`;
+            p3 = `diamond`;
         } else if (p2.includes(`🍀`)) {
             p3 = `four leaf clover`;
         } else if (p2.includes(`🎲`)) {
