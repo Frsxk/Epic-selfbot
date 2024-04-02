@@ -9,7 +9,8 @@ Learn to code and figure it out yourself.
  
 ## Features soon to come
 * Better automation, more concistency.
-* Auto training answers.
+* Auto training answers. (Implemented!)
+* Auto EPIC GUARD answers.
 
 # USE AT YOUR OWN RISK
 I AM NOT USING THIS. This is simply made for someone I know, because they want it.

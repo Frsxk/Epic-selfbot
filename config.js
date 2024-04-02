@@ -1,20 +1,20 @@
 require('dotenv').config();
 
 // Cooldown tolerance (0.05+ is safe, set it higher to lower epic guard encounter)
-const tolerance = 0.05
+const tolerance = 0.05;
 
 module.exports = {
-    user: '6823456789043125',
-    bot: '555955826880413696',
-    channel: '974590667445633064',
+    bot: '555955826880413696', // EPIC RPG bot id, do NOT change
+    channel: '', //type in your channel id
     token: `${process.env.TOKEN}`,
 
     // Customize your commands here
-    huntCmd: 'rpg hunt hardmode together',
-    workCmd: 'rpg chainsaw',
-    farmCmd: 'rpg farm bread',
-    trainingCmd: 'rpg ultraining',
-    adventureCmd: 'rpg adventure hardmode',
+    // Leave blank to turn off
+    huntCmd: 'rpg hunt',
+    workCmd: 'rpg chop',
+    farmCmd: 'rpg farm',
+    trainingCmd: 'rpg training',
+    adventureCmd: 'rpg adventure',
 
     // Customize your cooldowns and reductions here (in minutes)
     huntCd: 1 + tolerance,
