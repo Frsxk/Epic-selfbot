@@ -143,7 +143,7 @@ client.on('messageCreate', async message => {
     }
 
     function trMine() {
-        const question = msg.content.split('\n')[1].trim().toLowerCase().match(/[0-9]+/)[0];
+        const question = latest.split('\n')[1].trim().toLowerCase().match(/[0-9]+/)[0];
         if (ruby > question) {
             return chnl.send(arrY[randomAns]);
         } else {
