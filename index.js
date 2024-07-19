@@ -28,14 +28,35 @@ function scheduleTask(task, interval) {
 }
 let latest = null;
 let trainings;
+let ruby = 0;
+
+const arrY = ["yes", "y"];
+const arrN = ["n", "no"];
+const randomAns = Math.floor(Math.random() * arrY.length);
 
 client.on('messageCreate', async message => {
     const chnl = await client.channels.cache.find(ch => ch.id === config.channel);
     if (message.channel.id !== config.channel) return;
-    // if (message.author.id !== config.bot) return;
+    if (message.author.id !== config.bot) return;
 
-    if (message.content == latest) return;
+    latest = null;
     latest = message.content;
+
+    if (message.embeds.length > 0) {
+        const embed = message.embeds[0];
+        const itemsField = embed.fields.find(field => field.name === 'Items');
+
+        if (itemsField) {
+            const inv = itemsField.value;
+            const regex = /\*\*ruby\*\*: ([0-9]+(,[0-9]+)+)/;
+            let check = regex.exec(inv);
+            if (check == null) {
+                ruby = 0;
+            } else {
+                ruby = regex.exec(inv)[1].replace(/,/gm, '');
+            }
+        }
+    }
 
     if (message.content.includes(`:police_car:`) || message.content.includes(`🚓`)) {
         console.log(`please solve captcha and restart`);
@@ -51,23 +72,23 @@ client.on('messageCreate', async message => {
 
         // translating emojis
         let p3;
-        if (p2.includes(`:`)) {
-            p3 = p2.split(':')[1].trim();
-        } else if (p2.includes(`💎`)) {
+        if (p2.includes(`gem`)) {
             p3 = `diamond`;
-        } else if (p2.includes(`🍀`)) {
+        } else if (p2.includes(`four_leaf_clover`)) {
             p3 = `four leaf clover`;
-        } else if (p2.includes(`🎲`)) {
+        } else if (p2.includes(`game_die`)) {
             p3 = `dice`;
-        } else if (p2.includes(`🎁`)) {
+        } else if (p2.includes(`gift`)) {
             p3 = `gift`;
+        } else if (p2.includes(`coin`)) {
+            p3 = `coin`;
         }
         
         // matching and answer
         if (p1 == p3) {
-            return chnl.send('yes')
+            return chnl.send(arrY[randomAns]);
         } else {
-            return chnl.send('no')
+            return chnl.send(arrN[randomAns]);
         }
     }
     
@@ -122,14 +143,12 @@ client.on('messageCreate', async message => {
     }
 
     function trMine() {
-        const text = latest.split('\n')[1].trim().toLowerCase();
-        const regex = /[0-9]+/;
-        const question = text.match(/[0-9]+/)[0];
-
-        // soon to come (most mine training answers are no)
-        const array = ['yes', 'no', 'no', 'no', 'yes'];
-        const random = array[Math.floor(Math.random() * array.length)];
-        return chnl.send(random);
+        const question = msg.content.split('\n')[1].trim().toLowerCase().match(/[0-9]+/)[0];
+        if (ruby > question) {
+            return chnl.send(arrY[randomAns]);
+        } else {
+            return chnl.send(arrN[randomAns]);
+        }
     }
     
     // training detections
@@ -186,12 +205,24 @@ client.on('ready', async (message) => {
         await sleep(2000);
     }
 
+    // auto inv check
+    async function invCheck() {
+        chnl.send(config.invCheck);
+        await sleep(1000);
+        console.log(`logged ruby count: ${ruby}`);
+    }
+    if (config.invCheck.toLowerCase().includes('rpg')) {
+        scheduleTask(invCheck, minute * config.checkCd * config.cdReduction);
+        await sleep(2000);
+    }
+    
     // auto training
     async function doTraining() {
         chnl.send(config.trainingCmd);
         await sleep(1000);
         if (config.trainingCmd == 'rpg training') {
             // normal training
+            await sleep(1000);
             trainings();
         } else {
             // ULTRaining command
@@ -218,4 +249,10 @@ client.on('ready', async (message) => {
     }
 });
 
-client.login(config.token);
+try {
+    console.log(chalk.bgBlueBright.black(` ⌛ => Attempting to log in using token... `));
+    client.login(config.token);
+} catch (error) {
+    console.log(chalk.bgRedBright.black(` ❌ => Please check your token and try again.`));
+    return process.exit();
+}
