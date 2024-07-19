@@ -222,7 +222,7 @@ client.on('ready', async (message) => {
         await sleep(1000);
         if (config.trainingCmd == 'rpg training') {
             // normal training
-            await sleep(1000);
+            await sleep(250);
             trainings();
         } else {
             // ULTRaining command
